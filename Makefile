@@ -1,7 +1,7 @@
 PYTHON = python3
 CONFIG = config.txt
 
-.PHONY: install run debug clean lint lint-strict
+.PHONY: install run debug clean lint lint-strict build rebuild
 
 install:
 	$(PYTHON) -m pip install --upgrade pip
@@ -26,3 +26,10 @@ lint:
 lint-strict:
 	flake8 .
 	mypy . --strict
+
+build:
+	$(PYTHON) -m build
+
+rebuild:
+	$(MAKE) clean
+	$(MAKE) build

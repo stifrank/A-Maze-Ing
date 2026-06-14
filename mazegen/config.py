@@ -26,8 +26,8 @@ class MazeConfig:
     seed: int | None = None
 
 
-def parse_int(value: str, key: str) -> int:
-    """Parse a positive integer value."""
+def parse_positive_int(value: str, key: str) -> int:
+    """Parse a strictly positive integer value."""
     try:
         number = int(value)
     except ValueError as exc:
@@ -35,6 +35,14 @@ def parse_int(value: str, key: str) -> int:
     if number <= 0:
         raise ValueError(f"{key} must be greater than 0")
     return number
+
+
+def parse_seed(value: str) -> int:
+    """Parse a seed value (any integer including 0 is valid)."""
+    try:
+        return int(value)
+    except ValueError as exc:
+        raise ValueError("SEED must be an integer") from exc
 
 
 def parse_bool(value: str) -> bool:
@@ -109,8 +117,8 @@ def load_config(path: str) -> MazeConfig:
         missing = ", ".join(sorted(missing_keys))
         raise ValueError(f"Missing required key(s): {missing}")
 
-    width = parse_int(raw_config["WIDTH"], "WIDTH")
-    height = parse_int(raw_config["HEIGHT"], "HEIGHT")
+    width = parse_positive_int(raw_config["WIDTH"], "WIDTH")
+    height = parse_positive_int(raw_config["HEIGHT"], "HEIGHT")
     entry = parse_coordinates(raw_config["ENTRY"], "ENTRY")
     exit_point = parse_coordinates(raw_config["EXIT"], "EXIT")
     output_file = raw_config["OUTPUT_FILE"]
@@ -127,7 +135,7 @@ def load_config(path: str) -> MazeConfig:
 
     seed = None
     if "SEED" in raw_config:
-        seed = parse_int(raw_config["SEED"], "SEED")
+        seed = parse_seed(raw_config["SEED"])
 
     return MazeConfig(
         width=width,
