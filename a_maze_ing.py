@@ -2,9 +2,7 @@
 
 import sys
 
-from mazegen.config import load_config
-from mazegen.generator import MazeGenerator
-from mazegen.output import maze_to_hex_lines
+from mazegen.cli import run_cli
 
 
 def main() -> None:
@@ -14,21 +12,7 @@ def main() -> None:
         return
 
     try:
-        config = load_config(sys.argv[1])
-        generator = MazeGenerator(config)
-        generator.generate()
-        lines = maze_to_hex_lines(generator.maze)
-
-        print("Configuration loaded successfully")
-        print(f"Width: {config.width}")
-        print(f"Height: {config.height}")
-        print(f"Rows created: {len(generator.maze)}")
-        print(f"Cells per row: {len(generator.maze[0])}")
-        print("Maze generated successfully")
-        print(generator.maze[0][0])
-        print(generator.maze[0][1])
-        for line in lines:
-            print(line)
+        run_cli(sys.argv[1])
 
     except ValueError as error:
         print(f"Error: {error}")

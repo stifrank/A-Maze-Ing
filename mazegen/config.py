@@ -85,7 +85,8 @@ def load_config(path: str) -> MazeConfig:
 
                 if "=" not in stripped_line:
                     raise ValueError(
-                        f"Invalid syntax at line {line_number}: expected KEY=VALUE"
+                        f"Invalid syntax at line {line_number}: "
+                        "expected KEY=VALUE"
                     )
 
                 key, value = stripped_line.split("=", 1)
@@ -94,7 +95,8 @@ def load_config(path: str) -> MazeConfig:
 
                 if not key or not value:
                     raise ValueError(
-                        f"Invalid syntax at line {line_number}: empty key or value"
+                        f"Invalid syntax at line {line_number}: "
+                        "empty key or value"
                     )
 
                 raw_config[key] = value

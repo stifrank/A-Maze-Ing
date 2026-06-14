@@ -32,3 +32,24 @@ def maze_to_hex_lines(maze: list[list[Cell]]) -> list[str]:
         lines.append(line)
 
     return lines
+
+
+def write_maze_output(
+    filename: str,
+    maze: list[list[Cell]],
+    entry: tuple[int, int],
+    exit: tuple[int, int],
+    path: list[str],
+) -> None:
+    """Write the complete maze output to a file."""
+    hex_lines = maze_to_hex_lines(maze)
+
+    with open(filename, "w", encoding="utf-8") as file:
+        for line in hex_lines:
+            file.write(f"{line}\n")
+
+        file.write("\n")
+
+        file.write(f"{entry[0]},{entry[1]}\n")
+        file.write(f"{exit[0]},{exit[1]}\n")
+        file.write(f"{''.join(path)}\n")
