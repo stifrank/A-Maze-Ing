@@ -48,9 +48,10 @@ def parse_seed(value: str) -> int:
 
 def parse_bool(value: str) -> bool:
     """Parse a boolean value."""
-    if value == "True":
+    normalized_value = value.lower()
+    if normalized_value == "true":
         return True
-    if value == "False":
+    if normalized_value == "false":
         return False
     raise ValueError("PERFECT must be True or False")
 
@@ -107,7 +108,7 @@ def load_config(path: str) -> MazeConfig:
                     )
 
                 key, value = stripped_line.split("=", 1)
-                key = key.strip()
+                key = key.strip().upper()
                 value = value.strip()
 
                 if not key or not value:
