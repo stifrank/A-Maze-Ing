@@ -13,16 +13,7 @@ authors = [
     { name = "digonza2" },
 ]
 readme = "README.md"
-dependencies = []
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["mazegen*"]
-
-[tool.mypy]
-python_version = "3.10"
-warn_return_any = true
-warn_unused_ignores = true
-ignore_missing_imports = true
-disallow_untyped_defs = true
-check_untyped_defs = true

@@ -29,7 +29,7 @@ lint-strict:
 
 build:
 	$(PYTHON) -m build
-	$(PYTHON) -c "from pathlib import Path; import shutil; [shutil.copy2(path, Path('.')) for path in Path('dist').glob('mazegen-*.whl')]"
+	cp dist/mazegen-*.whl .
 
 rebuild:
 	$(MAKE) clean
