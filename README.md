@@ -19,6 +19,44 @@ Key features:
 - Bonus: dedicated colour control for the "42" pattern
 - Hexadecimal output file with path solution
 
+### Implemented features
+
+#### Mandatory functionality
+
+- Reads one configuration file passed to `a_maze_ing.py`.
+- Validates required keys: `WIDTH`, `HEIGHT`, `ENTRY`, `EXIT`, `OUTPUT_FILE`, and `PERFECT`.
+- Generates random mazes with DFS by default.
+- Supports perfect mazes (`PERFECT=True`) with exactly one path between any two cells.
+- Supports imperfect mazes (`PERFECT=False`) by opening extra internal walls while keeping all cells connected and avoiding forbidden 3x3 open areas.
+- Uses `SEED` when provided so the same configuration can reproduce the same maze.
+- Keeps all outer borders closed and validates that entry and exit are inside the maze and different.
+- Places the "42" wall pattern when the maze is large enough; otherwise it displays a clear warning and continues without the pattern.
+- Writes the generated maze to `OUTPUT_FILE` using hexadecimal wall encoding, followed by entry, exit, and the shortest path solution.
+- Finds the shortest path with BFS, including in imperfect mazes where several routes can exist.
+- Displays the maze in the terminal with visible entry (`S`), exit (`E`), walls, optional path, and the "42" pattern.
+- Provides a reusable `mazegen` Python package buildable with `make build`.
+
+#### Mandatory interactive controls
+
+- `p`: show or hide the shortest path.
+- `r`: regenerate the maze.
+- `c`: cycle through wall colours.
+- `q`: quit the program.
+- Unknown commands display a message and do not regenerate or redraw the maze.
+
+#### Bonus implementations
+
+- `ALGORITHM=PRIM` enables a second generation algorithm implemented in `mazegen/bonus_prim.py`.
+- The "42" pattern has independent colour control implemented in `mazegen/bonus_pattern_color.py`.
+- Bonus command `t`: cycle through "42" pattern colours. This command is only shown when the generated maze is large enough to contain the pattern.
+
+#### Additional robustness
+
+- Configuration keys and boolean values are case-insensitive.
+- Maze dimensions are capped at `100x100` to keep terminal rendering practical.
+- Entry and exit markers use fixed colours so they remain readable when wall colours change.
+- Pattern placement logic is isolated in `mazegen/pattern.py` for easier explanation and reuse.
+
 ---
 
 ## Instructions
@@ -140,15 +178,22 @@ DFS remains the default because it is the mandatory, simple baseline. Prim gives
 
 ### Terminal interactions
 
-The terminal interface supports the following commands:
+The terminal interface supports these mandatory commands:
 
 | Command | Action |
 |---------|--------|
 | `p` | Show or hide the shortest path |
 | `r` | Regenerate the maze |
 | `c` | Change wall colour |
-| `t` | Change the "42" pattern colour, when the pattern exists |
 | `q` | Quit |
+
+When the generated maze contains the "42" pattern, the bonus command below is also displayed:
+
+| Command | Action |
+|---------|--------|
+| `t` | Change the "42" pattern colour |
+
+If the maze is too small to contain the pattern, the `t` command is hidden from the command menu.
 
 Unknown commands display a clear message and do not regenerate the maze.
 
