@@ -12,6 +12,9 @@ REQUIRED_KEYS: set[str] = {
     "PERFECT",
 }
 
+MAX_WIDTH = 100
+MAX_HEIGHT = 100
+
 
 @dataclass
 class MazeConfig:
@@ -89,6 +92,15 @@ def validate_coordinates(
         raise ValueError(f"{key} must be inside maze bounds")
 
 
+def validate_dimensions(width: int, height: int) -> None:
+    """Validate that maze dimensions stay within supported limits."""
+    if width > MAX_WIDTH or height > MAX_HEIGHT:
+        raise ValueError(
+            "Maze dimensions are too large; "
+            f"maximum supported size is {MAX_WIDTH}x{MAX_HEIGHT}"
+        )
+
+
 def load_raw_config(path: str) -> dict[str, str]:
     """Load raw key-value pairs from a configuration file."""
     raw_config: dict[str, str] = {}
@@ -134,6 +146,7 @@ def build_config(raw_config: dict[str, str]) -> MazeConfig:
 
     width = parse_positive_int(raw_config["WIDTH"], "WIDTH")
     height = parse_positive_int(raw_config["HEIGHT"], "HEIGHT")
+    validate_dimensions(width, height)
     entry = parse_coordinates(raw_config["ENTRY"], "ENTRY")
     exit_point = parse_coordinates(raw_config["EXIT"], "EXIT")
     output_file = raw_config["OUTPUT_FILE"]

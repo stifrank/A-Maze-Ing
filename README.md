@@ -15,7 +15,7 @@ Key features:
 - Hidden "42" pattern embedded in the maze walls
 - Bonus: selectable DFS or Prim generation algorithm
 - BFS-based shortest path solver
-- Interactive terminal interface (toggle path, change colors, regenerate)
+- Interactive terminal interface (toggle path, change wall and pattern colors, regenerate)
 - Bonus: dedicated colour control for the "42" pattern
 - Hexadecimal output file with path solution
 
@@ -75,12 +75,14 @@ pip install mazegen-*.whl
 
 ## Configuration file format
 
-The configuration file uses `KEY=VALUE` pairs, one per line. Lines starting with `#` are comments and are ignored.
+The configuration file uses `KEY=VALUE` pairs, one per line. Lines starting with `#` are comments and are ignored. Keys are case-insensitive, and boolean values for `PERFECT` are case-insensitive.
+
+Maze dimensions are limited to `100x100` cells to keep terminal rendering practical and fail gracefully on unreasonable inputs.
 
 | Key | Description | Example |
 |-----|-------------|---------|
-| `WIDTH` | Maze width in cells (integer > 0) | `WIDTH=20` |
-| `HEIGHT` | Maze height in cells (integer > 0) | `HEIGHT=15` |
+| `WIDTH` | Maze width in cells (integer from 1 to 100) | `WIDTH=20` |
+| `HEIGHT` | Maze height in cells (integer from 1 to 100) | `HEIGHT=15` |
 | `ENTRY` | Entry cell coordinates as x,y | `ENTRY=0,0` |
 | `EXIT` | Exit cell coordinates as x,y | `EXIT=19,14` |
 | `OUTPUT_FILE` | Path to the output file | `OUTPUT_FILE=maze.txt` |
@@ -136,9 +138,25 @@ As a bonus, the config accepts `ALGORITHM=PRIM`. The Prim implementation lives i
 
 DFS remains the default because it is the mandatory, simple baseline. Prim gives a different maze texture while still producing a perfect maze before optional imperfect wall removals.
 
+### Terminal interactions
+
+The terminal interface supports the following commands:
+
+| Command | Action |
+|---------|--------|
+| `p` | Show or hide the shortest path |
+| `r` | Regenerate the maze |
+| `c` | Change wall colour |
+| `t` | Change the "42" pattern colour, when the pattern exists |
+| `q` | Quit |
+
+Unknown commands display a clear message and do not regenerate the maze.
+
+The entry and exit markers use fixed colours so they remain visible independently from wall colours.
+
 ### Bonus: 42 pattern colour
 
-The terminal renderer also includes a small visual bonus: the "42" pattern can use its own colour, independent from wall colours. The bonus colour list lives in `mazegen/bonus_pattern_color.py`, and the interactive CLI exposes it with the `t` command.
+The terminal renderer also includes a small visual bonus: the "42" pattern can use its own colour, independent from wall colours. The bonus colour list lives in `mazegen/bonus_pattern_color.py`, and the interactive CLI exposes it with the `t` command when the pattern exists. The dedicated pattern colour is applied to the pattern cells, their walls, and their corners.
 
 ---
 
@@ -236,14 +254,14 @@ The maze structure is a `list[list[Cell]]` where each `Cell` has boolean attribu
 
 ### AI usage
 
-AI tools (Claude, ChatGPT) were used during this project for the following tasks:
+AI tools, including Claude and ChatGPT, were used during this project for the following tasks:
 
 - Reviewing and debugging the maze generation logic, particularly the 3×3 open area constraint in imperfect mode.
-- Improving error handling and type hints across all modules.
-- Drafting and structuring this README.
-- Suggesting edge cases to test (seed=0, entry/exit at corners, small mazes without room for the 42 pattern).
+- Reviewing error handling, type hints, and edge cases in the Python modules.
+- Drafting and structuring parts of this README.
+- Suggesting test scenarios (seed=0, entry/exit at corners, small mazes without room for the 42 pattern).
 
-All AI-generated content was reviewed, tested, and understood before being included in the project.
+All AI-generated suggestions were reviewed, tested, adapted, and understood before being included in the project.
 
 ---
 
