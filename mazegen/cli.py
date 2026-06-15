@@ -1,5 +1,6 @@
 """Interactive command-line interface for A-Maze-ing."""
 
+from mazegen.bonus_pattern_color import PATTERN_COLORS
 from mazegen.config import load_config, MazeConfig
 from mazegen.generator import MazeGenerator
 from mazegen.output import write_maze_output
@@ -47,6 +48,7 @@ def run_cli(config_path: str) -> None:
 
     show_path = True
     wall_color_index = 0
+    pattern_color_index = 0
 
     while True:
         current_path = path if show_path else None
@@ -59,6 +61,7 @@ def run_cli(config_path: str) -> None:
                 generator.pattern_42,
                 current_path,
                 WALL_COLORS[wall_color_index],
+                PATTERN_COLORS[pattern_color_index],
             )
         )
 
@@ -66,9 +69,14 @@ def run_cli(config_path: str) -> None:
         print("[p] Toggle shortest path")
         print("[r] Regenerate maze")
         print("[c] Change wall colour")
+        print("[t] Change 42 pattern colour")
         print("[q] Quit")
 
-        command = input("> ").strip().lower()
+        try:
+            command = input("> ").strip().lower()
+        except EOFError:
+            print()
+            break
 
         if command == "q":
             break
@@ -80,3 +88,7 @@ def run_cli(config_path: str) -> None:
             wall_color_index = (
                 wall_color_index + 1
             ) % len(WALL_COLORS)
+        elif command == "t":
+            pattern_color_index = (
+                pattern_color_index + 1
+            ) % len(PATTERN_COLORS)

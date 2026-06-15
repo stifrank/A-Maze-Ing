@@ -3,6 +3,7 @@
 import random
 
 from mazegen.cell import Cell
+from mazegen.bonus_prim import generate_prim
 from mazegen.config import MazeConfig
 
 
@@ -251,7 +252,10 @@ class MazeGenerator:
         if self.config.exit in self.pattern_42:
             raise ValueError("EXIT cannot be inside the 42 pattern")
 
-        self._generate_perfect()
+        if self.config.algorithm == "PRIM":
+            generate_prim(self.config, self.maze)
+        else:
+            self._generate_perfect()
 
         if not self.config.perfect:
             self._add_imperfections()

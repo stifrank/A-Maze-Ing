@@ -13,8 +13,10 @@ Key features:
 - Imperfect maze generation (multiple paths, cycles)
 - Reproducible generation via seed
 - Hidden "42" pattern embedded in the maze walls
+- Bonus: selectable DFS or Prim generation algorithm
 - BFS-based shortest path solver
 - Interactive terminal interface (toggle path, change colors, regenerate)
+- Bonus: dedicated colour control for the "42" pattern
 - Hexadecimal output file with path solution
 
 ---
@@ -83,6 +85,7 @@ The configuration file uses `KEY=VALUE` pairs, one per line. Lines starting with
 | `EXIT` | Exit cell coordinates as x,y | `EXIT=19,14` |
 | `OUTPUT_FILE` | Path to the output file | `OUTPUT_FILE=maze.txt` |
 | `PERFECT` | Whether the maze is perfect | `PERFECT=True` |
+| `ALGORITHM` | Optional algorithm: `DFS` or `PRIM` | `ALGORITHM=DFS` |
 | `SEED` | Optional integer seed for reproducibility | `SEED=42` |
 
 Example `config.txt`:
@@ -95,7 +98,10 @@ ENTRY=0,0
 EXIT=19,14
 OUTPUT_FILE=maze.txt
 PERFECT=True
-SEED=42
+ALGORITHM=DFS
+
+# Optional seed for reproducible generation.
+# SEED=42
 ```
 
 ---
@@ -120,7 +126,17 @@ The result is always a **perfect maze** (a spanning tree): exactly one path exis
 - It naturally guarantees full connectivity with no isolated cells.
 - It is well-suited for embedding the "42" pattern by pre-marking those cells as visited before generation starts — the DFS simply routes around them.
 
-For `PERFECT=False`, after the DFS we remove a random subset of internal walls (avoiding the 42 pattern and ensuring no 3×3 open areas are created), introducing cycles and multiple valid paths.
+For `PERFECT=False`, after the selected perfect algorithm we remove a random subset of internal walls (avoiding the 42 pattern and ensuring no 3×3 open areas are created), introducing cycles and multiple valid paths.
+
+### Bonus: Prim algorithm
+
+As a bonus, the config accepts `ALGORITHM=PRIM`. The Prim implementation lives in `mazegen/bonus_prim.py` so the bonus logic stays clearly separated from the mandatory DFS generator. It grows the maze from the entry cell by repeatedly picking a random frontier wall that reaches an unvisited cell.
+
+DFS remains the default because it is the mandatory, simple baseline. Prim gives a different maze texture while still producing a perfect maze before optional imperfect wall removals.
+
+### Bonus: 42 pattern colour
+
+The terminal renderer also includes a small visual bonus: the "42" pattern can use its own colour, independent from wall colours. The bonus colour list lives in `mazegen/bonus_pattern_color.py`, and the interactive CLI exposes it with the `t` command.
 
 ---
 
@@ -147,6 +163,7 @@ config = MazeConfig(
     output_file="maze.txt",
     perfect=True,
     seed=42,
+    algorithm="DFS",
 )
 
 generator = MazeGenerator(config)
@@ -170,6 +187,7 @@ pattern = generator.pattern_42
 | `output_file` | `str` | Output filename |
 | `perfect` | `bool` | Perfect maze if True |
 | `seed` | `int \| None` | Seed for reproducibility |
+| `algorithm` | `str` | Generation algorithm: `DFS` or bonus `PRIM` |
 
 ### Accessing the solution
 
@@ -182,6 +200,7 @@ config = MazeConfig(
     entry=(0, 0), exit=(9, 9),
     output_file="maze.txt",
     perfect=True,
+    algorithm="DFS",
 )
 
 generator = MazeGenerator(config)
@@ -248,7 +267,7 @@ The main adjustment during development was adding the 3×3 open area constraint 
 ### What could be improved
 
 - The imperfect mode could offer more control over the density of added cycles.
-- Supporting multiple generation algorithms (e.g. Prim's) as a bonus would have added variety.
+- Additional bonus algorithms could be added in their own files following the same structure as `bonus_prim.py`.
 
 ### Tools used
 

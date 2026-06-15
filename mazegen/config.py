@@ -24,6 +24,7 @@ class MazeConfig:
     output_file: str
     perfect: bool
     seed: int | None = None
+    algorithm: str = "DFS"
 
 
 def parse_positive_int(value: str, key: str) -> int:
@@ -52,6 +53,14 @@ def parse_bool(value: str) -> bool:
     if value == "False":
         return False
     raise ValueError("PERFECT must be True or False")
+
+
+def parse_algorithm(value: str) -> str:
+    """Parse the optional maze generation algorithm."""
+    algorithm = value.upper()
+    if algorithm not in {"DFS", "PRIM"}:
+        raise ValueError("ALGORITHM must be DFS or PRIM")
+    return algorithm
 
 
 def parse_coordinates(value: str, key: str) -> tuple[int, int]:
@@ -137,6 +146,10 @@ def load_config(path: str) -> MazeConfig:
     if "SEED" in raw_config:
         seed = parse_seed(raw_config["SEED"])
 
+    algorithm = "DFS"
+    if "ALGORITHM" in raw_config:
+        algorithm = parse_algorithm(raw_config["ALGORITHM"])
+
     return MazeConfig(
         width=width,
         height=height,
@@ -145,4 +158,5 @@ def load_config(path: str) -> MazeConfig:
         output_file=output_file,
         perfect=perfect,
         seed=seed,
+        algorithm=algorithm,
     )

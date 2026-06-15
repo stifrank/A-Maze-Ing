@@ -7,4 +7,8 @@ ENTRY=0,0
 EXIT=10,8
 OUTPUT_FILE=maze.txt
 PERFECT=True
+ALGORITHM=DFS
+
+# Optional seed for reproducible generation.
+# Uncomment to always generate the same maze with this config.
 # SEED=42

@@ -17,7 +17,7 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
-	rm -rf build dist *.egg-info
+	rm -rf build dist *.egg-info mazegen-*.whl mazegen-*.tar.gz
 
 lint:
 	flake8 .
@@ -29,6 +29,7 @@ lint-strict:
 
 build:
 	$(PYTHON) -m build
+	$(PYTHON) -c "from pathlib import Path; import shutil; [shutil.copy2(path, Path('.')) for path in Path('dist').glob('mazegen-*.whl')]"
 
 rebuild:
 	$(MAKE) clean

@@ -14,7 +14,7 @@ def main() -> None:
     try:
         run_cli(sys.argv[1])
 
-    except ValueError as error:
+    except (OSError, ValueError) as error:
         print(f"Error: {error}")
 
 

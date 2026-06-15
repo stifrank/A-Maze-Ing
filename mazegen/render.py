@@ -1,6 +1,7 @@
 """ASCII rendering for mazes."""
 
 from mazegen.cell import Cell
+
 RESET_COLOR = "\033[0m"
 
 
@@ -64,6 +65,18 @@ def get_cell_content(
     return " "
 
 
+def color_cell_content(
+    content: str,
+    position: tuple[int, int],
+    pattern_42: set[tuple[int, int]],
+    pattern_color: str,
+) -> str:
+    """Apply the bonus 42 pattern colour when available."""
+    if position in pattern_42 and pattern_color:
+        return f"{pattern_color}{content}{RESET_COLOR}"
+    return content
+
+
 def render_maze(
     maze: list[list[Cell]],
     entry: tuple[int, int],
@@ -71,6 +84,7 @@ def render_maze(
     pattern_42: set[tuple[int, int]],
     path: list[str] | None = None,
     wall_color: str = "",
+    pattern_color: str = "",
 ) -> str:
     """Render a maze as ASCII text."""
     lines: list[str] = []
@@ -84,6 +98,7 @@ def render_maze(
 
         for x in range(width):
             cell = maze[y][x]
+            position = (x, y)
 
             top_line += color_wall("+", wall_color, True)
 
@@ -104,6 +119,12 @@ def render_maze(
                 exit,
                 pattern_42,
                 path_positions,
+            )
+            content = color_cell_content(
+                content,
+                position,
+                pattern_42,
+                pattern_color,
             )
             middle_line += f" {content} "
 
