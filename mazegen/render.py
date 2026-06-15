@@ -3,6 +3,8 @@
 from mazegen.cell import Cell
 
 RESET_COLOR = "\033[0m"
+ENTRY_COLOR = "\033[92m"
+EXIT_COLOR = "\033[91m"
 
 
 def color_wall(
@@ -74,6 +76,20 @@ def color_cell_content(
     """Apply the bonus 42 pattern colour when available."""
     if position in pattern_42 and pattern_color:
         return f"{pattern_color}{content}{RESET_COLOR}"
+    return content
+
+
+def color_entry_exit_content(
+    content: str,
+    position: tuple[int, int],
+    entry: tuple[int, int],
+    exit: tuple[int, int],
+) -> str:
+    """Apply fixed colours to entry and exit markers."""
+    if position == entry:
+        return f"{ENTRY_COLOR}{content}{RESET_COLOR}"
+    if position == exit:
+        return f"{EXIT_COLOR}{content}{RESET_COLOR}"
     return content
 
 
@@ -215,6 +231,12 @@ def render_cell_segments(
         position,
         pattern_42,
         pattern_color,
+    )
+    content = color_entry_exit_content(
+        content,
+        position,
+        entry,
+        exit,
     )
 
     return (

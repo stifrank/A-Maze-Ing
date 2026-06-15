@@ -8,10 +8,14 @@ from mazegen.config import MazeConfig
 from mazegen.pattern import (
     build_pattern_cells,
     can_draw_pattern,
+    MIN_HEIGHT_FOR_PATTERN,
+    MIN_WIDTH_FOR_PATTERN,
     reserve_pattern_cells,
 )
 
 IMPERFECT_WALL_REMOVAL_RATIO = 0.15
+ERROR_COLOR = "\033[91m"
+RESET_COLOR = "\033[0m"
 
 
 class MazeGenerator:
@@ -38,7 +42,14 @@ class MazeGenerator:
     def _build_42_pattern(self) -> None:
         """Reserve fully closed cells to draw the 42 pattern."""
         if not can_draw_pattern(self.config.width, self.config.height):
-            print("Error: maze too small to draw 42 pattern")
+            print(
+                f"\n{ERROR_COLOR}"
+                "Error: maze too small to draw 42 pattern. "
+                f"Minimum size is {MIN_WIDTH_FOR_PATTERN}x"
+                f"{MIN_HEIGHT_FOR_PATTERN}. "
+                "Continuing without it."
+                f"{RESET_COLOR}\n"
+            )
             return
 
         self.pattern_42 = build_pattern_cells(
