@@ -77,6 +77,48 @@ def color_cell_content(
     return content
 
 
+def get_pattern_wall_color(
+    position: tuple[int, int],
+    neighbor: tuple[int, int] | None,
+    pattern_42: set[tuple[int, int]],
+    wall_color: str,
+    pattern_color: str,
+) -> str:
+    """Return the 42 colour for walls that belong to pattern cells."""
+    if not pattern_color:
+        return wall_color
+    if position in pattern_42:
+        return pattern_color
+    if neighbor is not None and neighbor in pattern_42:
+        return pattern_color
+    return wall_color
+
+
+def get_pattern_corner_color(
+    vertex_x: int,
+    vertex_y: int,
+    pattern_42: set[tuple[int, int]],
+    wall_color: str,
+    pattern_color: str,
+) -> str:
+    """Return the 42 colour for corners touching pattern cells."""
+    if not pattern_color:
+        return wall_color
+
+    touching_cells = [
+        (vertex_x - 1, vertex_y - 1),
+        (vertex_x, vertex_y - 1),
+        (vertex_x - 1, vertex_y),
+        (vertex_x, vertex_y),
+    ]
+
+    for cell in touching_cells:
+        if cell in pattern_42:
+            return pattern_color
+
+    return wall_color
+
+
 def render_maze(
     maze: list[list[Cell]],
     entry: tuple[int, int],
@@ -99,16 +141,40 @@ def render_maze(
         for x in range(width):
             cell = maze[y][x]
             position = (x, y)
+            north_neighbor = (x, y - 1) if y > 0 else None
+            west_neighbor = (x - 1, y) if x > 0 else None
+            top_wall_color = get_pattern_wall_color(
+                position,
+                north_neighbor,
+                pattern_42,
+                wall_color,
+                pattern_color,
+            )
+            west_wall_color = get_pattern_wall_color(
+                position,
+                west_neighbor,
+                pattern_42,
+                wall_color,
+                pattern_color,
+            )
 
-            top_line += color_wall("+", wall_color, True)
+            corner_color = get_pattern_corner_color(
+                x,
+                y,
+                pattern_42,
+                wall_color,
+                pattern_color,
+            )
+
+            top_line += color_wall("+", corner_color, True)
 
             if cell.north:
-                top_line += color_wall("---", wall_color, True)
+                top_line += color_wall("---", top_wall_color, True)
             else:
                 top_line += "   "
 
             if cell.west:
-                middle_line += color_wall("|", wall_color, True)
+                middle_line += color_wall("|", west_wall_color, True)
             else:
                 middle_line += " "
 
@@ -128,11 +194,25 @@ def render_maze(
             )
             middle_line += f" {content} "
 
-        top_line += color_wall("+", wall_color, True)
+        final_corner_color = get_pattern_corner_color(
+            width,
+            y,
+            pattern_42,
+            wall_color,
+            pattern_color,
+        )
+        top_line += color_wall("+", final_corner_color, True)
 
         last_cell = maze[y][width - 1]
         if last_cell.east:
-            middle_line += color_wall("|", wall_color, True)
+            east_wall_color = get_pattern_wall_color(
+                (width - 1, y),
+                None,
+                pattern_42,
+                wall_color,
+                pattern_color,
+            )
+            middle_line += color_wall("|", east_wall_color, True)
         else:
             middle_line += " "
 
@@ -142,14 +222,35 @@ def render_maze(
     bottom_line = ""
 
     for x in range(width):
-        bottom_line += color_wall("+", wall_color, True)
+        bottom_wall_color = get_pattern_wall_color(
+            (x, height - 1),
+            None,
+            pattern_42,
+            wall_color,
+            pattern_color,
+        )
+        bottom_corner_color = get_pattern_corner_color(
+            x,
+            height,
+            pattern_42,
+            wall_color,
+            pattern_color,
+        )
+        bottom_line += color_wall("+", bottom_corner_color, True)
 
         if maze[height - 1][x].south:
-            bottom_line += color_wall("---", wall_color, True)
+            bottom_line += color_wall("---", bottom_wall_color, True)
         else:
             bottom_line += "   "
 
-    bottom_line += color_wall("+", wall_color, True)
+    final_bottom_corner_color = get_pattern_corner_color(
+        width,
+        height,
+        pattern_42,
+        wall_color,
+        pattern_color,
+    )
+    bottom_line += color_wall("+", final_bottom_corner_color, True)
     lines.append(bottom_line)
 
     return "\n".join(lines)
