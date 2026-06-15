@@ -128,6 +128,8 @@ The result is always a **perfect maze** (a spanning tree): exactly one path exis
 
 For `PERFECT=False`, after the selected perfect algorithm we remove a random subset of internal walls (avoiding the 42 pattern and ensuring no 3×3 open areas are created), introducing cycles and multiple valid paths.
 
+The required "42" pattern placement is isolated in `mazegen/pattern.py`, which defines the pattern shape, minimum size, centered placement, and cell reservation logic.
+
 ### Bonus: Prim algorithm
 
 As a bonus, the config accepts `ALGORITHM=PRIM`. The Prim implementation lives in `mazegen/bonus_prim.py` so the bonus logic stays clearly separated from the mandatory DFS generator. It grows the maze from the entry cell by repeatedly picking a random frontier wall that reaches an unvisited cell.

@@ -5,20 +5,11 @@ import random
 from mazegen.cell import Cell
 from mazegen.bonus_prim import generate_prim
 from mazegen.config import MazeConfig
-
-
-PATTERN_42: list[str] = [
-    "4 4 222",
-    "4 4   2",
-    "444 222",
-    "  4 2 ",
-    "  4 222",
-]
-
-PATTERN_WIDTH = 7
-PATTERN_HEIGHT = 5
-MIN_WIDTH_FOR_PATTERN = 11
-MIN_HEIGHT_FOR_PATTERN = 9
+from mazegen.pattern import (
+    build_pattern_cells,
+    can_draw_pattern,
+    reserve_pattern_cells,
+)
 
 IMPERFECT_WALL_REMOVAL_RATIO = 0.15
 
@@ -46,23 +37,15 @@ class MazeGenerator:
 
     def _build_42_pattern(self) -> None:
         """Reserve fully closed cells to draw the 42 pattern."""
-        if (
-            self.config.width < MIN_WIDTH_FOR_PATTERN
-            or self.config.height < MIN_HEIGHT_FOR_PATTERN
-        ):
+        if not can_draw_pattern(self.config.width, self.config.height):
             print("Error: maze too small to draw 42 pattern")
             return
 
-        start_x = (self.config.width - PATTERN_WIDTH) // 2
-        start_y = (self.config.height - PATTERN_HEIGHT) // 2
-
-        for y_offset, row in enumerate(PATTERN_42):
-            for x_offset, char in enumerate(row):
-                if char != " ":
-                    x = start_x + x_offset
-                    y = start_y + y_offset
-                    self.pattern_42.add((x, y))
-                    self.maze[y][x].visited = True
+        self.pattern_42 = build_pattern_cells(
+            self.config.width,
+            self.config.height,
+        )
+        reserve_pattern_cells(self.maze, self.pattern_42)
 
     def _get_unvisited_neighbors(
         self,

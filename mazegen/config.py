@@ -89,8 +89,8 @@ def validate_coordinates(
         raise ValueError(f"{key} must be inside maze bounds")
 
 
-def load_config(path: str) -> MazeConfig:
-    """Load and validate a maze configuration file."""
+def load_raw_config(path: str) -> dict[str, str]:
+    """Load raw key-value pairs from a configuration file."""
     raw_config: dict[str, str] = {}
 
     try:
@@ -122,6 +122,11 @@ def load_config(path: str) -> MazeConfig:
     except FileNotFoundError as exc:
         raise ValueError(f"Configuration file not found: {path}") from exc
 
+    return raw_config
+
+
+def build_config(raw_config: dict[str, str]) -> MazeConfig:
+    """Build a validated maze configuration from raw key-value pairs."""
     missing_keys = REQUIRED_KEYS - raw_config.keys()
     if missing_keys:
         missing = ", ".join(sorted(missing_keys))
@@ -161,3 +166,8 @@ def load_config(path: str) -> MazeConfig:
         seed=seed,
         algorithm=algorithm,
     )
+
+
+def load_config(path: str) -> MazeConfig:
+    """Load and validate a maze configuration file."""
+    return build_config(load_raw_config(path))
